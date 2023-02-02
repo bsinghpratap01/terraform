@@ -1,5 +1,7 @@
 # Case 1 - Without variable
+
 # vi main.tf
+
 provider "aws" {
    region = "ap-south-1"
 }
@@ -21,4 +23,75 @@ tags = {
    Env  = "Dev"
 }
 }
+
+# Case 2 - Defining variable in resouirce file
+# vi main.tf
+
+provider "aws" {
+   region = "ap-south-1"
+}
+
+variable "instancetype" {
+   default = "t2.micro"
+}
+
+variable "image" {
+   default = "ami-01a4f99c4ac11b03c"
+}
+
+resource "aws_instance" "new" {
+  ami           = var.image         # ap-south-1
+  instance_type = var.instancetype
+
+tags = {
+   Name = "New"
+   Env  = "Testing"
+}
+}
+
+resource "aws_instance" "old" {
+  ami           = var.image         # ap-south-1
+  instance_type = var.instancetype
+
+tags = {
+   Name = "Old"
+   Env  = "Dev"
+}
+}
+
+# If we want to change in infra such as instance type, then only need to change variable value.
+# Case 3 - Defining variable in separate file
+
+# vi variable.tf  (filename can be anything but .tf extention is a must)
+
+variable "instancetype" {
+   default = "t2.micro"
+}
+
+variable "image" {
+   default = "ami-01a4f99c4ac11b03c"
+}
+
+# vi main.tf
+resource "aws_instance" "new" {
+  ami           = var.image         # ap-south-1
+  instance_type = var.instancetype
+
+tags = {
+   Name = "New"
+   Env  = "Testing"
+}
+}
+
+resource "aws_instance" "old" {
+  ami           = var.image         # ap-south-1
+  instance_type = var.instancetype
+
+tags = {
+   Name = "Old"
+   Env  = "Dev"
+}
+}
+
+
 
