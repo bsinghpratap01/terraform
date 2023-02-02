@@ -1,0 +1,24 @@
+# Case 1 - Without variable
+# vi main.tf
+provider "aws" {
+   region = "ap-south-1"
+}
+
+resource "aws_instance" "new" {
+  ami           = "ami-0597375488017747e" # ap-south-1
+  instance_type = "t2.micro"
+tags = {
+   Name = "New"
+   Env  = "Testing"
+}
+}
+
+resource "aws_instance" "old" {
+  ami           = "ami-0597375488017747e" # ap-south-1
+  instance_type = "t2.micro"
+tags = {
+   Name = "Old"
+   Env  = "Dev"
+}
+}
+
