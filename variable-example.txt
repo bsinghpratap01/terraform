@@ -93,5 +93,71 @@ tags = {
 }
 }
 
+# Case 4 - If you want to supply variable value in terminal, then remove default value in variable definition.
+
+# vi variable.tf  
+
+variable "instancetype" {
+}
+
+variable "image" {
+}
+
+# main.tf remain the same.
+
+# Case 5 - Overwriting default variable values, define values in "terraform.tfvars" file.
+
+# vi variable.tf  
+
+variable "instancetype" {
+   default = "t2.micro"
+}
+
+variable "image" {
+   default = "ami-01a4f99c4ac11b03c"
+}
+
+# vi main.tf
+resource "aws_instance" "new" {
+  ami           = var.image         # ap-south-1
+  instance_type = var.instancetype
+
+tags = {
+   Name = "New"
+   Env  = "Testing"
+}
+}
+
+resource "aws_instance" "old" {
+  ami           = var.image         # ap-south-1
+  instance_type = var.instancetype
+
+tags = {
+   Name = "Old"
+   Env  = "Dev"
+}
+}
+
+# vi terraform.tfvars
+
+instancetype = "t2.micro"
+image = "ami-0597375488017747e"
+
+# Case 6 - Terraform reads only "terraform.tfvars" file automatically if we change file name then it will not read it.
+# For example if we rename terraform.tfvars to demo.tfvars then terraform does not read this file automatically.
+# To make terraform read this file use command line as below-
+
+# terraform apply -var-file="demo.tfvars"
+
+If you want terraform read this file automatically then rename this file as "demo.auto.tfvars"
+
+# Case 7 - Define variable value in command line usng "-var" option
+
+terraform apply -var="instancetype=t2.nano" -var="image=ami-01a4f99c4ac11b03c"
+
+# Case 8 - Defining variables as environment variable
+# export TF_VAR_instancetype=t2.nano
+# export TF_VAR_image=ami-01a4f99c4ac11b03c
+
 
 
