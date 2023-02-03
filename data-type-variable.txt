@@ -1,5 +1,6 @@
 # Data type in variables -> String, Number, List, Map
 # Create a new load balancer
+# example 1 - vi main.tf
 
 provider "aws" {
    region = "ap-south-1"
@@ -43,3 +44,37 @@ resource "aws_elb" "bar" {
   tags = {
     Name = "baba-ka-elb"
   }
+}
+
+# example 2 - more in list type variable
+# add below code also to above file.
+
+variable "instancetype" {
+   type = list
+   default = ["t2.nano","t2.micro","t2.small"]
+}
+resource "aws_instance" "dev-team" {
+  ami           = "ami-0597375488017747e"
+  instance_type = var.instancetype[0]
+
+  tags = {
+    Name = "dev-team-vm"
+  }
+}
+resource "aws_instance" "test-team" {
+  ami           = "ami-0597375488017747e"
+  instance_type = var.instancetype[1]
+
+  tags = {
+    Name = "test-team-vm"
+  }
+}
+resource "aws_instance" "prod-team" {
+  ami           = "ami-0597375488017747e"
+  instance_type = var.instancetype[2]
+
+  tags = {
+    Name = "prod-team-vm"
+  }
+}
+
