@@ -78,3 +78,86 @@ resource "aws_instance" "prod-team" {
   }
 }
 
+# more use case
+# we can also define list variable for "tag"
+
+variable "instancetype" {
+   type = list
+   default = ["t2.nano","t2.micro","t2.small"]
+}
+
+variable "instancetag" {
+   type = list
+   default = ["dev","test","prod"]
+}
+
+resource "aws_instance" "dev-team" {
+  ami           = "ami-0597375488017747e"
+  instance_type = var.instancetype[0]
+
+  tags = {
+    Name = var.instancetag[0]
+  }
+}
+resource "aws_instance" "test-team" {
+  ami           = "ami-0597375488017747e"
+  instance_type = var.instancetype[1]
+
+  tags = {
+    Name = var.instancetag[1]
+  }
+}
+resource "aws_instance" "prod-team" {
+  ami           = "ami-0597375488017747e"
+  instance_type = var.instancetype[2]
+
+  tags = {
+    Name = var.instancetag[2]
+  }
+}
+
+### map variable
+
+variable "instancetype" {
+   type = list
+   default = ["t2.nano","t2.micro","t2.small"]
+}
+
+variable "instancetag" {
+   type = list
+   default = ["dev","test","prod"]
+}
+
+variable "mapvar" {
+   type = map
+   default = {
+      ap-south-1a = "t2.nano"
+      ap-south-1b = "t2.medium"
+      ap-south-1c = "t2.small"
+   }
+}
+resource "aws_instance" "dev-team" {
+  ami           = "ami-0597375488017747e"
+  instance_type = var.mapvar["ap-south-1a"]
+
+  tags = {
+    Name = var.instancetag[0]
+  }
+}
+resource "aws_instance" "test-team" {
+  ami           = "ami-0597375488017747e"
+  instance_type = var.mapvar["ap-south-1b"]
+
+  tags = {
+    Name = var.instancetag[1]
+  }
+}
+resource "aws_instance" "prod-team" {
+  ami           = "ami-0597375488017747e"
+  instance_type = var.mapvar["ap-south-1c"]
+
+  tags = {
+    Name = var.instancetag[2]
+  }
+}
+
