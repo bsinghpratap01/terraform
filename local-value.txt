@@ -126,4 +126,63 @@ resource "aws_ebs_volume" "usaexample" {
  }
 
 ### Now see if you have 200 resources and if you want to change "tag" for all 200 resorces, then without using "local value", you have to change in all 200 resources ### one by one. But if you used "local value -locals" then only inside "locals" definitions, values need to be changed.
+### for example
 
+# vi main.tf
+
+provider "aws" {
+   region = "ap-south-1"
+}
+
+locals {
+   common_tag = {
+     Name = "UK1"
+     Owner = "Bhanupratapsingh"
+   }
+}
+
+locals {
+   usa_tag = {
+     Name = "USA1"
+     Owner = "USA-admin"
+   }
+}
+
+resource "aws_instance" "web" {
+  ami           = "ami-0597375488017747e"
+  instance_type = "t2.micro"
+  tags = local.common_tag
+ }
+
+resource "aws_vpc" "main" {
+  cidr_block       = "10.0.0.0/16"
+  instance_tenancy = "default"
+  tags = local.common_tag
+ }
+
+resource "aws_ebs_volume" "example" {
+  availability_zone = "ap-south-1b"
+  size              = 40
+  tags = local.common_tag
+ }
+
+resource "aws_instance" "usaweb" {
+  ami           = "ami-0597375488017747e"
+  instance_type = "t2.micro"
+  tags = local.usa_tag
+ }
+
+resource "aws_vpc" "usamain" {
+  cidr_block       = "10.0.0.0/16"
+  instance_tenancy = "default"
+  tags = local.usa_tag
+ }
+
+resource "aws_ebs_volume" "usaexample" {
+  availability_zone = "ap-south-1b"
+  size              = 40
+  tags = local.usa_tag
+ }
+ 
+ ### another use case
+ ### suppose UK client gone and another client came and the required infra is the same, then we can use UK client infra already existing only by changing "tag".
