@@ -1,0 +1,29 @@
+# vi main.tf
+
+provider "aws" {
+   region = "ap-south-1"
+}
+
+variable vm_size {
+   type = map
+   default = {
+      "dev" = "t2.micro",
+      "test" = "t2.medium",
+      "prod" = "t2.small" 
+   }
+}
+
+variable os_image {
+   type = list
+   default = ["ami-06984ea821ac0a879", "ami-0597375488017747e", "ami-0be0a52ed3f231c12"]
+}
+
+variable input {}
+
+resource "aws_instance" "dev" {
+   ami = var.os_image[0]
+   instance_type = var.vm_size["dev"]
+   count = var.input == "dev" ? 1 : 0 
+   
+   tags = { Name= "Dev-department" }
+}
