@@ -29,3 +29,22 @@ resource "aws_instance" "prod-team" {
 - for_each
 - providers
 Note count, for_each, depends_on are the same between resource blocks and modules, lifecycle is omitted and provider becomes providers
+
+
+# count parameter "count.index" varibale
+
+# vi main.tf
+
+provider "aws" {
+   region = "ap-south-1"
+}
+
+resource "aws_instance" "prod-team" {
+  ami           = "ami-0597375488017747e"
+  instance_type = "t2.micro"
+  count = 3
+
+  tags = {
+    Name = "dev.$(count.index)
+  }
+}
