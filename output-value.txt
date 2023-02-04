@@ -54,3 +54,20 @@ output "instance_public_ip" {
    value = aws_instance.web.public_ip
 }
 
+
+#### we can also see output on command line by using
+
+# terraform output
+
+In json format also-
+
+# terraform output -json
+
+### we can also view specific output
+
+# terraform output  instance_status      (use output name used in definition)
+
+
+
+
+
