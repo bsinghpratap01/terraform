@@ -71,3 +71,30 @@ resource "aws_instance" "prod-team" {
     Name = var.instancetag[count.index]
   }
 }
+
+# count variable changing instance type
+
+# vi main.tf
+
+provider "aws" {
+   region = "ap-south-1"
+}
+
+variable "instancetag" {
+   type = list
+   default = ["test-dep","prod-dep","dev-dep"]
+}
+
+variable "instancetype" {
+   type = list
+   default = ["t2.micro","t2.small","t2.medium"]
+}
+resource "aws_instance" "prod-team" {
+  ami           = "ami-0597375488017747e"
+  instance_type = var.instancetype[count.index]
+  count = 3
+
+  tags = {
+    Name = var.instancetag[count.index]
+  }
+}
