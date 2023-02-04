@@ -124,3 +124,6 @@ resource "aws_ebs_volume" "usaexample" {
   size              = 40
   tags = local.usa_tag
  }
+
+### Now see if you have 200 resources and if you want to change "tag" for all 200 resorces, then without using "local value", you have to change in all 200 resources ### one by one. But if you used "local value -locals" then only inside "locals" definitions, values need to be changed.
+
