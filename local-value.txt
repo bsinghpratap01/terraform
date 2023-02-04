@@ -32,3 +32,95 @@ resource "aws_ebs_volume" "example" {
     Name = "UK-project"
   }
 }
+
+### using local value to define tags-
+
+# vi main.tf
+
+provider "aws" {
+   region = "ap-south-1"
+}
+
+locals {
+   common_tag = {
+     Name = "UK-project"
+     Owner = "Bhanupratapsingh"
+   }
+}
+
+resource "aws_instance" "web" {
+  ami           = "ami-0597375488017747e"
+  instance_type = "t2.micro"
+  tags = local.common_tag
+ }
+
+resource "aws_vpc" "main" {
+  cidr_block       = "10.0.0.0/16"
+  instance_tenancy = "default"
+  tags = local.common_tag
+ }
+
+resource "aws_ebs_volume" "example" {
+  availability_zone = "ap-south-1b"
+  size              = 40
+  tags = local.common_tag
+ }
+
+### we can see that using locals saves our time and effort
+### if we want to implement other projetcs, then we can do this by using "locals" as below-
+
+# vi main.tf
+
+provider "aws" {
+   region = "ap-south-1"
+}
+
+locals {
+   common_tag = {
+     Name = "UK-project"
+     Owner = "Bhanupratapsingh"
+   }
+}
+
+locals {
+   usa_tag = {
+     Name = "USA-project"
+     Owner = "USA-admin"
+   }
+}
+
+resource "aws_instance" "web" {
+  ami           = "ami-0597375488017747e"
+  instance_type = "t2.micro"
+  tags = local.common_tag
+ }
+
+resource "aws_vpc" "main" {
+  cidr_block       = "10.0.0.0/16"
+  instance_tenancy = "default"
+  tags = local.common_tag
+ }
+
+resource "aws_ebs_volume" "example" {
+  availability_zone = "ap-south-1b"
+  size              = 40
+  tags = local.common_tag
+ }
+
+resource "aws_instance" "usaweb" {
+  ami           = "ami-0597375488017747e"
+  instance_type = "t2.micro"
+  tags = local.usa_tag
+ }
+
+resource "aws_vpc" "usamain" {
+  cidr_block       = "10.0.0.0/16"
+  instance_tenancy = "default"
+  tags = local.usa_tag
+ }
+
+resource "aws_ebs_volume" "usaexample" {
+  availability_zone = "ap-south-1b"
+  size              = 40
+  tags = local.usa_tag
+ }
