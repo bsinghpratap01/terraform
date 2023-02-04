@@ -48,3 +48,26 @@ resource "aws_instance" "prod-team" {
     Name = "dev.$(count.index)
   }
 }
+
+### count parameter with list type variable
+
+# vi main.tf
+
+provider "aws" {
+   region = "ap-south-1"
+}
+
+variable "instancetag" {
+   type = list
+   default = ["test-dep","prod-dep","dev-dep"]
+}
+
+resource "aws_instance" "prod-team" {
+  ami           = "ami-0597375488017747e"
+  instance_type = "t2.micro"
+  count = 3
+
+  tags = {
+    Name = var.instancetag[count.index]
+  }
+}
