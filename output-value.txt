@@ -67,6 +67,8 @@ In json format also-
 
 # terraform output  instance_status      (use output name used in definition)
 
+### Refer - https://learn.hashicorp.com/tutorials/terraform/outputs
+### complete given project in your environment without trying to understand all given files.
 
 
 
