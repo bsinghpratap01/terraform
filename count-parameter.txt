@@ -1,3 +1,5 @@
+# The count argument replicates the given resource or module a specific number of times with an incrementing counter. It works best when resources will be identical, or # nearly so.
+
 ### vi main.tf
 
 provider "aws" {
@@ -13,3 +15,17 @@ resource "aws_instance" "prod-team" {
     Name = dev-team
   }
 }
+
+### There are actually five meta-arguments that can be used within resource blocks at the time of writing:
+- depends_on
+- count
+- for_each
+- provider
+- lifecycle
+
+### Meta-arguments can also be used within modules, which differ slightly from the resource meta-arguments:
+- depends_on
+- count
+- for_each
+- providers
+Note count, for_each, depends_on are the same between resource blocks and modules, lifecycle is omitted and provider becomes providers
