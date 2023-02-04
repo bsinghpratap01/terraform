@@ -1,0 +1,30 @@
+### First create resources without "locals", after that we will see with "locals" and it's benefits
+
+# vi main.tf
+
+resource "aws_instance" "web" {
+  ami           = "ami-0597375488017747e"
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "UK-project"
+  }
+}
+
+resource "aws_vpc" "main" {
+  cidr_block       = "10.0.0.0/16"
+  instance_tenancy = "default"
+
+  tags = {
+    Name = "UK-project"
+  }
+}
+
+resource "aws_ebs_volume" "example" {
+  availability_zone = "ap-south-1b"
+  size              = 40
+
+  tags = {
+    Name = "UK-project"
+  }
+}
