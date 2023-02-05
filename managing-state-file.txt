@@ -1,1 +1,35 @@
+#### "terraform.tfstate" contains all information about infra whatever created by terraform.
+### Initially it does not exist but it get created when we run "terraform apply"
 
+# vi main.tf
+
+provider "aws" {
+  region = "us-east-2"
+}
+
+resource "aws_instance" "web" {
+  ami           = "ami-0597375488017747e" 
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "web-box"
+  }
+}
+
+resource "aws_instance" "db" {
+  ami           = "ami-0597375488017747e" 
+  instance_type = "t2.medium"
+
+  tags = {
+    Name = "db-box"
+  }
+}
+
+resource "aws_ebs_volume" "storage" {
+  availability_zone = "ap-south-1b"
+  size              = 40
+
+  tags = {
+    Name = "vol-storage"
+  }
+}
