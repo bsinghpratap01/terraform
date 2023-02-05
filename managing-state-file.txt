@@ -42,7 +42,7 @@ resource "aws_ebs_volume" "storage" {
 # Instead of using version control, the best way to manage shared storage for state files is to use Terraform’s built-in support for remote backends. A number of      # remote backends are supported, including Amazon S3, Azure Storage, Google Cloud Storage etc.
 
 # Remote state file storage - S3 bucket example
-
+### Reference - https://gauravguptacloud.medium.com/terraform-state-shared-storage-for-state-files-how-to-manage-7912907436b7
 # Task 1 - Create s3 bucket
 
 provider "aws" {
@@ -81,6 +81,19 @@ resource "aws_dynamodb_table" "terraform_locks" {
    }
 }
 
+# Task 3 - Backend configuration
+
+terraform {
+  backend "s3" {
+    # your bucket name
+	bucket = "bhanu-3333-terraform"
+	key = "bhanu-3333-terraform/projects/terraform.tfstate"
+	region = "ap-south-1"
+	# DynamoDB table name
+	dynamodb_table = "terraform-test-locks"
+	encrypt = true
+  }
+}
 
 
 
