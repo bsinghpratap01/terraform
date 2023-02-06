@@ -129,3 +129,19 @@ root@worker2:~/test07#
 https://developer.hashicorp.com/terraform/tutorials/state/state-cli
 https://developer.hashicorp.com/terraform/tutorials/state/cloud-migrate
 
+Terraform compares your configuration with the state file and your existing infrastructure to create plans and make changes to your infrastructure. When you run "terraform apply" or "terraform destroy" against your initialized configuration, Terraform writes metadata about your configuration to the state file and updates your infrastructure resources accordingly.
+
+Warning: Do not manually modify state files.
+
+Examine State with CLI:-
+"terraform show" -  to get a human-friendly output of the resources contained in your state file.
+"terraform state list" - to get the list of resource names and local identifiers in your state file.
+
+Replace a resource with CLI:-
+terraform plan -replace="aws_instance.example"  to see the actions Terraform would take if you replaced the instance.
+
+"terraform apply" with the "-replace" flag to force Terraform to destroy and recreate the resource.
+terraform apply -replace="aws_instance.example"
+
+Move a resource to a different state file-
+
