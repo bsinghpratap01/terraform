@@ -95,6 +95,35 @@ terraform {
   }
 }
 
+## You will get below "state file locking" message, when multiple users trying to make changes the same time. 
+
+root@worker2:~/test07# terraform apply
+Acquiring state lock. This may take a few moments...
+╷
+│ Error: Error acquiring the state lock
+│
+│ Error message: ConditionalCheckFailedException: The conditional
+│ request failed
+│ Lock Info:
+│   ID:        f4938799-5dc7-d5c5-f0ba-9d5a26b5a46e
+│   Path:      bhanu-3333-terraform/bhanu-3333-terraform/project/terraform.tfstate
+│   Operation: OperationTypeApply
+│   Who:       root@worker2
+│   Version:   1.3.6
+│   Created:   2023-02-06 14:01:47.522972784 +0000 UTC
+│   Info:
+│
+│
+│ Terraform acquires a state lock to protect the state from being
+│ written
+│ by multiple users at the same time. Please resolve the issue
+│ above and try
+│ again. For most commands, you can disable locking with the
+│ "-lock=false"
+│ flag, but this is not recommended.
+╵
+root@worker2:~/test07#
+
 
 
 
