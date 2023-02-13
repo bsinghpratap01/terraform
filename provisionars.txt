@@ -1,0 +1,6 @@
+# Provisioner type - local-exec, remote-exec, file provisioner
+# File provioner only accepts "/tmp" as destination, for other destination location use combination file + remote-exec provisioners.
+# 'local-exec' runs on the system where we run terraform commands, 'remote-exec' runs on remote system, and in 'file' provisioner we define source and destination.
+# remote and file provisioners need 'connection' to be defined on windows systems "WINRM" and on linux systems "SSH"
+
+# Vendor provisioners - CHEF, PUPPET, HABITAT, SALTSTACK
