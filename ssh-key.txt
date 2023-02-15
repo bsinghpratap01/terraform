@@ -1,0 +1,66 @@
+# If you already have ssh public and private key pair, then
+
+provider "aws" {
+   region     = "ap-south-1"
+   access_key = ""
+   secret_key = ""
+   }
+
+resource "aws_instance" "ec2_example" {
+    ami = "ami-06984ea821ac0a879"  
+    instance_type = "t2.micro" 
+    key_name= "aws_key"
+    vpc_security_group_ids = [aws_security_group.main.id]
+  }
+
+resource "aws_security_group" "main" {
+  egress = [
+    {
+      cidr_blocks      = [ "0.0.0.0/0", ]
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "-1"
+      security_groups  = []
+      self             = false
+      to_port          = 0
+    }
+  ]
+ ingress               = [
+   {
+     cidr_blocks      = [ "0.0.0.0/0", ]
+     description      = ""
+     from_port        = 22
+     ipv6_cidr_blocks = []
+     prefix_list_ids  = []
+     protocol         = "tcp"
+     security_groups  = []
+     self             = false
+     to_port          = 22
+  }
+  ]
+}
+
+resource "aws_key_pair" "deployer" {
+  key_name   = "aws_key"
+  public_key = "<your public key>"
+}
+
+
+# Generates a secure private key and encodes it as PEM
+
+resource "tls_private_key" "key_pair" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+# Create the Key Pair
+resource "aws_key_pair" "key_pair" {
+  key_name   = "proj-key-pair"  
+  public_key = tls_private_key.key_pair.public_key_openssh
+}
+# Save file
+resource "local_file" "ssh_key" {
+  filename = "${aws_key_pair.key_pair.key_name}.pem"
+  content  = tls_private_key.key_pair.private_key_pem
+}
