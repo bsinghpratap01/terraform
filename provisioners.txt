@@ -80,5 +80,77 @@ resource "aws_security_group" "main" {
   ]
 }
 
+# Case 2 - Example of full website
+
+provider "aws" {
+   region = "ap-south-1"
+}
+
+resource "aws_instance" "prod-team" {
+  ami           = "ami-0e742cca61fb65051"
+  instance_type = "t2.micro"
+  key_name = "aws_key"
+  vpc_security_group_ids = [aws_security_group.main.id]
+
+  tags = {
+    Name = "prod"
+  }
+
+provisioner "file" {
+  source = "/home/myweb/website"
+  destination = "/tmp"
+  }
+
+provisioner "remote-exec" {
+  inline = [
+   "sudo yum install -y httpd",
+   "sudo yum start httpd",
+   "sudo systemctl enable httpd",
+   "sudo cp -rvf /tmp/website/* /var/www/html",
+   "sudo systemctl restart httpd"
+  ]
+  }
+connection {
+  host = self.public_ip
+  user = "ec2-user"
+  type = "ssh"
+  private_key = file("/myuser/.ssh/id_rsa")
+}
+}
+
+resource "aws_key_pair" "deployer" {
+  key_name   = "aws_key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCvb//HB8ATxJ+CQ4+MiKB6JiapecbuQn9bsCLVefIitXPC9RBUbvxoa6vwc7ttlYdz2FQ5S+/qq584JIs04zIXGBo2r8MXukI8UrAPuLbLdZAjcBkS/0MLrQI9J8e1/cajHd/8WH81X1czIXS5FNLetbWzQe23FS++HUQ+ga9+1cXCjo4UMawvByY2ph6H0UPrvkknj/DmxnhUbe/5SRwVBcqGd0zz8F8xIfh25yH5nbEZFLAcY9RZpjSw1TXWsgEXj6P4Bl2plXQ36bCCKt/LPfLa65qZ89v1U+3+z8b7gyrGJ9p4LTB4DmgarGVmo4S8dGJ6cQn3QdNINlZQyfJHhdCUl6BolDQ8GunBNQKzoZ3GjmqhzbxLkfHPvY2AKeDRF8MkMvOSq8w7j1dIIE9FNlJrzeRcLVV9dAQ3cGqJeKqXJcNMUz31YdWHlDi91A2ksnkdURQg6+R+uWl6JufmQqC8klOqeGaomSCQEN3sv5wl/qVeQShft1BYs5glfvc= mykey@worker"
+}
+
+resource "aws_security_group" "main" {
+  egress = [
+    {
+      cidr_blocks      = [ "0.0.0.0/0", ]
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "-1"
+      security_groups  = []
+      self             = false
+      to_port          = 0
+    }
+  ]
+ ingress               = [
+   {
+     cidr_blocks      = [ "0.0.0.0/0", ]
+     description      = ""
+     from_port        = 22
+     ipv6_cidr_blocks = []
+     prefix_list_ids  = []
+     protocol         = "tcp"
+     security_groups  = []
+     self             = false
+     to_port          = 80
+  }
+  ]
+}
+
 
   
