@@ -171,7 +171,7 @@ resource "aws_instance" "prod-team" {
   }
 
 provisioner "local-exec" {
-  command = "echo $(aws_instance.prod-team.public_ip) >> /tmp/public_ip.txt"
+  command = "echo ${aws_instance.prod-team.public_ip} >> /tmp/public_ip.txt"
 }
 }
 
