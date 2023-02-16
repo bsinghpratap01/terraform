@@ -5,7 +5,7 @@
 
 # Vendor provisioners - CHEF, PUPPET, HABITAT, SALTSTACK
 
-# Case 1.
+# Case 1 - Example - provisioning a web server.
 
 ### vi main.tf
 
@@ -152,5 +152,64 @@ resource "aws_security_group" "main" {
   ]
 }
 
+# Case 3 - Example of "local-exec"
 
+### vi main.tf
+
+provider "aws" {
+   region = "ap-south-1"
+}
+
+resource "aws_instance" "prod-team" {
+  ami           = "ami-0597375488017747e"
+  instance_type = "t2.micro"
+  key_name = "aws_key"
+  vpc_security_group_ids = [aws_security_group.main.id]
+
+  tags = {
+    Name = "prod"
+  }
+
+provisioner "local-exec" {
+  command = "echo $(aws_instance.prod-team.public_ip) >> /tmp/public_ip.txt"
+}
+}
+
+output "prod-team_ip" {
+  value = aws_instance.prod-team.public_ip
+}
+
+resource "aws_key_pair" "deployer" {
+  key_name   = "aws_key"
+  public_key = "<your public key>"
+}
+
+resource "aws_security_group" "main" {
+  egress = [
+    {
+      cidr_blocks      = [ "0.0.0.0/0", ]
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "-1"
+      security_groups  = []
+      self             = false
+      to_port          = 0
+    }
+  ]
+ ingress               = [
+   {
+     cidr_blocks      = [ "0.0.0.0/0", ]
+     description      = ""
+     from_port        = 22
+     ipv6_cidr_blocks = []
+     prefix_list_ids  = []
+     protocol         = "tcp"
+     security_groups  = []
+     self             = false
+     to_port          = 22
+  }
+  ]
+}
   
