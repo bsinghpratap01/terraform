@@ -4,3 +4,81 @@
 # remote and file provisioners need 'connection' to be defined on windows systems "WINRM" and on linux systems "SSH"
 
 # Vendor provisioners - CHEF, PUPPET, HABITAT, SALTSTACK
+
+# Case 1.
+
+### vi main.tf
+
+provider "aws" {
+   region = "ap-south-1"
+}
+
+resource "aws_instance" "prod-team" {
+  ami           = "ami-0597375488017747e"
+  instance_type = "t2.micro"
+  key_name = "aws_key"
+  vpc_security_group_ids = [aws_security_group.main.id]
+
+  tags = {
+    Name = "prod"
+  }
+
+provisioner "file" {
+  source = "/root/bhanu/index.html"
+  destination = "/tmp/index.html"
+  }
+
+provisioner "remote-exec" {
+  inline = [
+   "sudo yum install -y httpd"
+   "sudo yum start httpd",
+   "sudo systemctl enable httpd",
+   "cp /tmp/index.html /var/www/html",
+   "sudo systemctl restart httpd"
+  ]
+  }  
+connection {
+  host = self.public_ip
+  user = "ec2-user"
+  type = "ssh"
+  private_key = file("./deployer")
+}
+
+}
+
+resource "aws_key_pair" "deployer" {
+  key_name   = "aws_key"
+  public_key = "<your public key>"
+}
+
+resource "aws_security_group" "main" {
+  egress = [
+    {
+      cidr_blocks      = [ "0.0.0.0/0", ]
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "-1"
+      security_groups  = []
+      self             = false
+      to_port          = 0
+    }
+  ]
+ ingress               = [
+   {
+     cidr_blocks      = [ "0.0.0.0/0", ]
+     description      = ""
+     from_port        = 22
+     ipv6_cidr_blocks = []
+     prefix_list_ids  = []
+     protocol         = "tcp"
+     security_groups  = []
+     self             = false
+     to_port          = 22
+  }
+  ]
+}
+
+
+  
