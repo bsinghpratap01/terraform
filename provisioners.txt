@@ -213,6 +213,138 @@ resource "aws_security_group" "main" {
   ]
 }
 
+# 'local-exec' Running an ansible playbook
+
+provider "aws" {
+   region = "ap-south-1"
+}
+
+variable "privatekey" {
+  default = "developer"
+}
+
+resource "aws_instance" "web" {
+  ami           = "ami-0e742cca61fb65051"
+  instance_type = "t2.micro"
+  key_name = "aws_key"
+  vpc_security_group_ids = [aws_security_group.main.id]
+
+  tags = {
+    Name = "prod"
+  }
+
+provisioner "local-exec" {
+  command = "ansible-playbook -i ${aws_instance.web.public_ip}, --private-key ${var.privatekey} play.yaml"
+}
+}
+
+resource "aws_key_pair" "developer" {
+  key_name   = "aws_key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDSA3E3o18aT642PA3eUlkK5ZOk4/3ScPKk0Ft1L6E7B+I+hpqRVayN560tWukM3iiQKSnBfZZYqyYDIZWBYrbFfAGs/EBdEt9Nq8MTtZYWe6fehgrlmUnsaq8CSn3KKet6rHyJHsfsxD3Vw8uR4IiXoxV5To5++T+/sI9d9leXihjPPcgZ23+Myh43doy/7UzDIWW11D/zQVOFaqS3O49yufr0PffHODysNsd3Y1+82Cc35baJSBlxEl+lXfiuhdLwxwzvQAkiwuz+vUWsxC9nckq+JgH52WraYc6CyawHfcPb17EfZp0Jw6aES80upTpMoj+ShqqJv/V4/PXp3D2Y9wHP78JxWID0YQ/+aRHCqxkKk8PTne4eycp4CLiwhifbIbWZSyN5ul7tOiNuSoeRKwEUXL6wXyZ0rFmFlb7lMEaUrlLlquM/wP/M81x7LUMXgXVE6lesppnE8WpYYthiwj9JY/klg0snzfHJTc+3Fl6ifcj0GTODGthpq56FM+k= root@worker2"
+}
+
+resource "aws_security_group" "main" {
+  egress = [
+    {
+      cidr_blocks      = [ "0.0.0.0/0", ]
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "-1"
+      security_groups  = []
+      self             = false
+      to_port          = 0
+    }
+  ]
+ ingress               = [
+   {
+     cidr_blocks      = [ "0.0.0.0/0", ]
+     description      = ""
+     from_port        = 22
+     ipv6_cidr_blocks = []
+     prefix_list_ids  = []
+     protocol         = "tcp"
+     security_groups  = []
+     self             = false
+     to_port          = 80
+  }
+  ]
+}
+
+## Run this code, you will get an error. To resolve this error we have to use 'remote-exec' and 'connection' block before running ansible playbook using 
+## 'local-exec'
+## Below code works fine.
+
+provider "aws" {
+   region = "ap-south-1"
+}
+
+variable "privatekey" {
+  default = "developer"
+}
+
+resource "aws_instance" "web" {
+  ami           = "ami-0e742cca61fb65051"
+  instance_type = "t2.micro"
+  key_name = "aws_key"
+  vpc_security_group_ids = [aws_security_group.main.id]
+
+  tags = {
+    Name = "prod"
+  }
+
+provisioner "remote-exec" {
+  inline = [
+      "echo 'build ssh connection' "
+    ]
+connection {
+  host = self.public_ip
+  user = "ec2-user"
+  type = "ssh"
+  private_key = file("./developer")
+}
+}
+provisioner "local-exec" {
+  command = "ansible-playbook -i ${aws_instance.web.public_ip}, --private-key ${var.privatekey} play.yaml"
+}
+}
+
+resource "aws_key_pair" "developer" {
+  key_name   = "aws_key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDSA3E3o18aT642PA3eUlkK5ZOk4/3ScPKk0Ft1L6E7B+I+hpqRVayN560tWukM3iiQKSnBfZZYqyYDIZWBYrbFfAGs/EBdEt9Nq8MTtZYWe6fehgrlmUnsaq8CSn3KKet6rHyJHsfsxD3Vw8uR4IiXoxV5To5++T+/sI9d9leXihjPPcgZ23+Myh43doy/7UzDIWW11D/zQVOFaqS3O49yufr0PffHODysNsd3Y1+82Cc35baJSBlxEl+lXfiuhdLwxwzvQAkiwuz+vUWsxC9nckq+JgH52WraYc6CyawHfcPb17EfZp0Jw6aES80upTpMoj+ShqqJv/V4/PXp3D2Y9wHP78JxWID0YQ/+aRHCqxkKk8PTne4eycp4CLiwhifbIbWZSyN5ul7tOiNuSoeRKwEUXL6wXyZ0rFmFlb7lMEaUrlLlquM/wP/M81x7LUMXgXVE6lesppnE8WpYYthiwj9JY/klg0snzfHJTc+3Fl6ifcj0GTODGthpq56FM+k= root@worker2"
+}
+
+resource "aws_security_group" "main" {
+  egress = [
+    {
+      cidr_blocks      = [ "0.0.0.0/0", ]
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "-1"
+      security_groups  = []
+      self             = false
+      to_port          = 0
+    }
+  ]
+ ingress               = [
+   {
+     cidr_blocks      = [ "0.0.0.0/0", ]
+     description      = ""
+     from_port        = 22
+     ipv6_cidr_blocks = []
+     prefix_list_ids  = []
+     protocol         = "tcp"
+     security_groups  = []
+     self             = false
+     to_port          = 80
+  }
+  ]
+}
+
+
 # "local-exec" example from Internet
 
 resource "aws_instance" "web" {
